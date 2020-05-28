@@ -1,0 +1,119 @@
+---
+title: "Transport Data"
+output: html_notebook
+---
+## 1. Installing and Using the Packages
+
+Before Starting Coding, Clean all datas in the memory .
+library() specifies that packages to be used.
+Installing and using Required Packages for the Project:
+  Go to the Bottom right side where from the 5 tabs Click the Packages Tab and Click Install in the first line and type the 4 packages name inside seperated by space or ,
+
+
+```{r}
+# install.packages("ggplot2")  # Add # before code after 1st Run
+library(ggplot2)
+# install.packages("dplyr")  # Add # before code after 1st Run
+library(dplyr)
+# install.packages("sqldf")  # Add # before code after 1st Run
+library(sqldf)
+# install.packages("tidyr")  # Add # before code after 1st Run
+library(tidyr)
+# install.packages("scales")  # Add # before code after 1st Run
+library(scales)
+library('rpart')
+```
+Reading the CSV Files: \
+1) Getting the Current Directory \
+2) Setting the Working Directory (Replace \ by \\ or /)  \
+3) Checking the file exists or not \
+4) Reading ot Uploading the CSV file into the R \
+```{r}
+getwd()
+setwd("C:/Users/spiro/Documents/Projects/")
+file.exists("ITBD10.csv")
+Trans <- read.csv("ITBD10.csv",TRUE,stringsAsFactors = FALSE)
+```
+Viewing the Data
+```{r}
+View(Trans)
+```
+##Understandinng the Data
+1) Structure of the Data
+```{r}
+str(Trans)
+```
+2) First 6 Data to Understand the table
+```{r}
+head(Trans,10)
+```
+3) Dimensions of the Data:
+```{r}
+dim(Trans)
+```
+4) Column names of the Data:
+```{r}
+colnames(Trans)
+```
+## Cleaning the Data:
+
+Checking for NA
+```{r}
+is.na(Trans)
+```
+Any Na Data's in Dataset
+```{r}
+any(is.na(Trans))
+```
+Summarizing the Data
+```{r}
+summary(Trans)
+```
+
+```{r}
+trans1 <- Trans [,c(1,5:15)]
+```
+#Visualization of Data:
+```{r}
+ggplot(trans1, aes(PROBLEM, fill=REVIEW )) + geom_bar() +
+  ggtitle("How Much Complaints have been Recorded") +
+  theme(axis.text.x = element_text(angle = 65, hjust = 1)) +
+  ylab("Complaints")
+```
+How much Records (Travels) from different source:
+```{r}
+ggplot(trans1, aes(FROM,  mean(RATING), fill=REVIEW )) + geom_bar(stat = "identity") +
+  ggtitle("Count of Source (FROM)") +
+  theme(axis.text.x = element_text(angle = 65, hjust = 1)) +
+  ylab("RATINGS")
+```
+
+```{r}
+ggplot(trans1, aes(DESTINATION_PLACE, RATING, fill=REVIEW )) + geom_bar(stat = "identity") +
+  ggtitle("Destination") +
+  theme(axis.text.x = element_text(angle = 65, hjust = 1)) +
+  ylab("Ratings")
+```
+
+```{r}
+ggplot(trans1, aes(TYPE, RATING, fill=REVIEW )) + geom_bar(stat = "identity") +
+  ggtitle("TYPE OF VEHICLE USED") +
+  theme(axis.text.x = element_text(angle = 65, hjust = 1)) +
+  ylab("TRIPS Went")
+```
+
+
+
+## Checking for the Most Popular Tourist
+```{r}
+trans_f <- trans1 %>% select(FROM, RATING) %>% group_by(FROM) %>% 
+  summarise(mr = mean(RATING) )
+trans_f <- trans_f %>% arrange(desc(mr))
+trans_f
+```
+##Tourist Places with the Highest Number of Ratings
+```{r}
+trans_d <- trans1 %>% select(DESTINATION_PLACE, RATING) %>% group_by(DESTINATION_PLACE) %>% summarise(mr = mean(RATING))
+trans_d <- trans_d %>% arrange(desc(mr))
+trans_d
+```
